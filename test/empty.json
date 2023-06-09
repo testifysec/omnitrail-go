@@ -1,0 +1,34 @@
+{
+  "header": {
+    "features": {
+      "directory": {
+        "algorithms": [
+          "gitoid:sha1",
+          "gitoid:sha256"
+        ]
+      },
+      "file": {
+        "algorithms": [
+          "gitoid:sha1",
+          "gitoid:sha256",
+          "sha1",
+          "sha256"
+        ]
+      },
+      "posix": {}
+    }
+  },
+  "mapping": {
+    "/Users/fkautz/src/testifysec/omnitrail-go/test/empty": {
+      "type": "directory",
+      "gitoid:sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "gitoid:sha256": "473a0f4c3be8a93681a267e3b1e9a7dcda1185436fe141f7749120a303721813",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "drwxr-xr-x",
+        "size": "64"
+      }
+    }
+  }
+}

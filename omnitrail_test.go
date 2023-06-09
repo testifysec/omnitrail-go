@@ -4,70 +4,120 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"sort"
+	"strings"
 	"testing"
 )
 
 func TestEmpty(t *testing.T) {
-	mapping := New(WithSha1(), WithSha256())
-
-	err := mapping.Add("./test/empty")
-	assert.NoError(t, err)
-
-	result, err := json.MarshalIndent(mapping, "", "  ")
-	assert.NoError(t, err)
-	fmt.Println(string(result))
-	printADGs(mapping)
+	name := "empty"
+	testAdd(t, name)
 }
 
 func TestOneFiles(t *testing.T) {
-	mapping := New(WithSha1(), WithSha256())
-
-	err := mapping.Add("./test/one-file")
-	assert.NoError(t, err)
-
-	result, err := json.MarshalIndent(mapping, "", "  ")
-	assert.NoError(t, err)
-	fmt.Println(string(result))
-
-	fmt.Println("sha1")
-	printADGs(mapping)
-}
-
-func printADGs(mapping *Envelope) {
-	for k, v := range mapping.Sha1ADGs() {
-		fmt.Println(k)
-		fmt.Println(v)
-		fmt.Println()
-	}
-	fmt.Println("sha256")
-	for k, v := range mapping.Sha256ADGs() {
-		fmt.Println(k)
-		fmt.Println(v)
-		fmt.Println("--")
-	}
+	name := "one-file"
+	testAdd(t, name)
 }
 
 func TestTwoFiles(t *testing.T) {
-	mapping := New(WithSha1(), WithSha256())
-
-	err := mapping.Add("./test/two-files")
-	assert.NoError(t, err)
-
-	result, err := json.MarshalIndent(mapping, "", "  ")
-	assert.NoError(t, err)
-	fmt.Println(string(result))
-
-	printADGs(mapping)
+	name := "two-files"
+	testAdd(t, name)
 }
 
 func TestDeepStructure(t *testing.T) {
-	mapping := New(WithSha1(), WithSha256())
+	name := "deep"
+	testAdd(t, name)
+}
 
-	err := mapping.Add("./test/deep")
+func testAdd(t *testing.T, name string) {
+	mapping := NewTrail()
+
+	err := mapping.Add("./test/" + name)
 	assert.NoError(t, err)
 
-	result, err := json.MarshalIndent(mapping, "", "  ")
+	expectedBytes, err := os.ReadFile("./test/" + name + ".json")
 	assert.NoError(t, err)
-	fmt.Println(string(result))
-	printADGs(mapping)
+
+	var expectedEnvelope Envelope
+	err = json.Unmarshal(expectedBytes, &expectedEnvelope)
+	assert.NoError(t, err)
+
+	shortestExpectedKey := getShortestKey(&expectedEnvelope)
+	shortestActualKey := getShortestKey(mapping.Envelope())
+
+	for oldKey, val := range expectedEnvelope.Mapping {
+		newKey := strings.Replace(oldKey, shortestExpectedKey, shortestActualKey, 1)
+		//fmt.Printf("%s\n%s\n%s\n%s\n\n", shortestExpectedKey, shortestActualKey, oldKey, newKey)
+		delete(expectedEnvelope.Mapping, oldKey)
+		expectedEnvelope.Mapping[newKey] = val
+	}
+
+	assert.Equal(t, &expectedEnvelope, mapping.Envelope())
+
+	res := formatADGString(mapping)
+
+	expectedBytes, err = os.ReadFile("./test/" + name + ".adg")
+	assert.NoError(t, err)
+	assert.Equal(t, string(expectedBytes), res)
+	if string(expectedBytes) != res {
+		err = os.WriteFile("./"+name+".adg", []byte(res), 0644)
+		assert.NoError(t, err)
+	}
+}
+
+func getShortestKey(expectedEnvelope *Envelope) string {
+	// get map keys
+	keys := make([]string, 0, len(expectedEnvelope.Mapping))
+	for key := range expectedEnvelope.Mapping {
+		keys = append(keys, key)
+	}
+
+	// sort keys from shortest to longest
+	sort.Slice(keys, func(i, j int) bool {
+		return len(keys[i]) < len(keys[j])
+	})
+
+	shortestKey := keys[0]
+	return shortestKey
+}
+
+func formatADGString(mapping Factory) string {
+	res := ""
+	sha1adgs := mapping.Sha1ADGs()
+	// create a list of all keys sorted in lexical order
+	keys := make([]string, 0, len(sha1adgs))
+	for k := range sha1adgs {
+		keys = append(keys, k)
+	}
+	// sort the keys
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := sha1adgs[k]
+		if v != "" {
+			res += fmt.Sprintln(k)
+			res += fmt.Sprintln(v)
+			res += fmt.Sprintln("--")
+		}
+	}
+	res += fmt.Sprintln("----")
+
+	keys = make([]string, 0, len(sha1adgs))
+	sha2adgs := mapping.Sha256ADGs()
+	keys = make([]string, 0, len(sha2adgs))
+	for k := range sha2adgs {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := sha2adgs[k]
+		if v != "" {
+			res += fmt.Sprintln(k)
+			res += fmt.Sprintln(v)
+			res += fmt.Sprintln("--")
+		}
+	}
+	return res
 }

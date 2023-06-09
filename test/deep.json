@@ -1,0 +1,95 @@
+{
+  "header": {
+    "features": {
+      "directory": {
+        "algorithms": [
+          "gitoid:sha1",
+          "gitoid:sha256"
+        ]
+      },
+      "file": {
+        "algorithms": [
+          "gitoid:sha1",
+          "gitoid:sha256",
+          "sha1",
+          "sha256"
+        ]
+      },
+      "posix": {}
+    }
+  },
+  "mapping": {
+    "/Users/fkautz/src/testifysec/omnitrail-go/test/deep": {
+      "type": "directory",
+      "gitoid:sha1": "afc6c552cd2595009cf7847777ad5897d0abe46a",
+      "gitoid:sha256": "3f8d7b5b500f4db43c40c4586f754e4702c1a7a3d61509867f1af37fae04fa18",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "drwxr-xr-x",
+        "size": "128"
+      }
+    },
+    "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/dir1": {
+      "type": "directory",
+      "gitoid:sha1": "f6c2e0f6ac10055527287a21db1ad39424bf3b99",
+      "gitoid:sha256": "188f8b3bc7cbce45e6bb5c2063c9733eb3a18ddcd3f593556b9a8626961b0f77",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "drwxr-xr-x",
+        "size": "128"
+      }
+    },
+    "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/dir1/dir2": {
+      "type": "directory",
+      "gitoid:sha1": "b51452d06f9e8b948089762da313b43973cbd6a6",
+      "gitoid:sha256": "4dc2f9fa74bb7761434f4994c26b52d1b8c27661f19dba63d225749b5a5a60f3",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "drwxr-xr-x",
+        "size": "96"
+      }
+    },
+    "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/dir1/dir2/file2.txt": {
+      "type": "file",
+      "sha1": "cb99b709a1978bd205ab9dfd4c5aaa1fc91c7523",
+      "sha256": "3377870dfeaaa7adf79a374d2702a3fdb13e5e5ea0dd8aa95a802ad39044a92f",
+      "gitoid:sha1": "30d67d4672d5c05833b7192cc77a79eaafb5c7ad",
+      "gitoid:sha256": "73bae245b03a7c9d540831beca1987b2a34f8bec948d032132d09224b613d186",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "-rw-r--r--",
+        "size": "5"
+      }
+    },
+    "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/dir1/file1.txt": {
+      "type": "file",
+      "sha1": "60b27f004e454aca81b0480209cce5081ec52390",
+      "sha256": "c147efcfc2d7ea666a9e4f5187b115c90903f0fc896a56df9a6ef5d8f3fc9f31",
+      "gitoid:sha1": "08219db9b0969fa29cf16fd04df4a63964da0b69",
+      "gitoid:sha256": "2da00b9c51e5e7554c44a3929f9f8cee3c4e742d4f71bec0d4e1d37256d17207",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "-rw-r--r--",
+        "size": "5"
+      }
+    },
+    "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/root.txt": {
+      "type": "file",
+      "sha1": "dc76e9f0c0006e8f919e0c515c66dbba3982f785",
+      "sha256": "4813494d137e1631bba301d5acab6e7bb7aa74ce1185d456565ef51d737677b2",
+      "gitoid:sha1": "93ca1422a8da0a9effc465eccbcb17e23015542d",
+      "gitoid:sha256": "520f6e3c5ab9d63a4b3acd9bb69d90aad62dd0362d35355d47fcda9f1b70be3e",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "-rw-r--r--",
+        "size": "4"
+      }
+    }
+  }
+}
