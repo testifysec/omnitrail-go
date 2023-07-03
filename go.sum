@@ -5,6 +5,8 @@ github.com/edwarnicke/gitoid v0.0.0-20220710194850-1be5bfda1f9d h1:4l+Uq5zFWSagX
 github.com/edwarnicke/gitoid v0.0.0-20220710194850-1be5bfda1f9d/go.mod h1:WxWwA3EYuCQjlR5EBUX3uaTS8bh9BOa7BcqVREHQ0uQ=
 github.com/omnibor/omnibor-go v0.0.0-20230226193847-c1d2b6d19159 h1:lM5TaZOWo76IG5zElw3ozfnWuwIqOt0/YW410IJGKaE=
 github.com/omnibor/omnibor-go v0.0.0-20230226193847-c1d2b6d19159/go.mod h1:ArlQivzDQvZnFe8itjlA3ndPTXd9iWOgqzF31OyIEFQ=
+github.com/omnibor/omnibor-go v0.0.0-20230521145532-a77de61a16cd h1:25EpGVgctk6V3DUa1gqFHvjVbmdWqM+jBZAed7p/krQ=
+github.com/omnibor/omnibor-go v0.0.0-20230521145532-a77de61a16cd/go.mod h1:ArlQivzDQvZnFe8itjlA3ndPTXd9iWOgqzF31OyIEFQ=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
