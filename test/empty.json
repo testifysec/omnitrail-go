@@ -26,8 +26,7 @@
       "posix": {
         "owner_gid": "20",
         "owner_uid": "501",
-        "permissions": "drwxr-xr-x",
-        "size": "64"
+        "permissions": "drwxr-xr-x"
       }
     }
   }

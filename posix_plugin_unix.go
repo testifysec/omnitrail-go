@@ -31,7 +31,10 @@ func (p *PosixPlugin) Add(path string) error {
 	statt := stat.Sys().(*syscall.Stat_t)
 	p.params[path].uid = statt.Uid
 	p.params[path].gid = statt.Gid
-	p.params[path].size = stat.Size()
+	// if path is a directory, set size to 0
+	if !perms.IsDir() {
+		p.params[path].size = stat.Size()
+	}
 	return nil
 }
 
@@ -44,7 +47,10 @@ func (p *PosixPlugin) Store(envelope *Envelope) error {
 		element.Posix.Permissions = p.params[path].permMode.String()
 		element.Posix.OwnerUID = strconv.Itoa(int(p.params[path].uid))
 		element.Posix.OwnerGID = strconv.Itoa(int(p.params[path].gid))
-		element.Posix.Size = strconv.Itoa(int(p.params[path].size))
+		if p.params[path].size != 0 {
+			siezString := strconv.Itoa(int(p.params[path].size))
+			element.Posix.Size = siezString
+		}
 	}
 	return nil
 }

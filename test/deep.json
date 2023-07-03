@@ -26,8 +26,7 @@
       "posix": {
         "owner_gid": "20",
         "owner_uid": "501",
-        "permissions": "drwxr-xr-x",
-        "size": "128"
+        "permissions": "drwxr-xr-x"
       }
     },
     "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/dir1": {
@@ -37,8 +36,7 @@
       "posix": {
         "owner_gid": "20",
         "owner_uid": "501",
-        "permissions": "drwxr-xr-x",
-        "size": "128"
+        "permissions": "drwxr-xr-x"
       }
     },
     "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/dir1/dir2": {
@@ -48,8 +46,7 @@
       "posix": {
         "owner_gid": "20",
         "owner_uid": "501",
-        "permissions": "drwxr-xr-x",
-        "size": "96"
+        "permissions": "drwxr-xr-x"
       }
     },
     "/Users/fkautz/src/testifysec/omnitrail-go/test/deep/dir1/dir2/file2.txt": {

@@ -76,10 +76,6 @@ func testAdd(t *testing.T, name string) {
 	expectedBytes, err = os.ReadFile("./test/" + name + ".adg")
 	assert.NoError(t, err)
 	assert.Equal(t, string(expectedBytes), res)
-	if string(expectedBytes) != res {
-		err = os.WriteFile("./"+name+".adg", []byte(res), 0644)
-		assert.NoError(t, err)
-	}
 }
 
 func getShortestKey(expectedEnvelope *Envelope) string {
