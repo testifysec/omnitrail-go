@@ -11,6 +11,11 @@ import (
 )
 
 func TestEmpty(t *testing.T) {
+	// TODO, use a tempdir instead of making one in ./test
+	if _, err := os.Stat("./test/empty"); os.IsNotExist(err) {
+		err := os.Mkdir("./test/empty", 0755)
+		assert.NoError(t, err)
+	}
 	name := "empty"
 	testAdd(t, name)
 }
