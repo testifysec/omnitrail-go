@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"os/user"
 	"sort"
 	"strings"
 	"testing"
@@ -53,9 +54,19 @@ func testAdd(t *testing.T, name string) {
 
 	for oldKey, val := range expectedEnvelope.Mapping {
 		newKey := strings.Replace(oldKey, shortestExpectedKey, shortestActualKey, 1)
-		//fmt.Printf("%s\n%s\n%s\n%s\n\n", shortestExpectedKey, shortestActualKey, oldKey, newKey)
 		delete(expectedEnvelope.Mapping, oldKey)
 		expectedEnvelope.Mapping[newKey] = val
+	}
+
+	// get current username
+	currentUser, err := user.Current()
+	assert.NoError(t, err)
+	uid := currentUser.Uid
+	gid := currentUser.Gid
+
+	for _, v := range expectedEnvelope.Mapping {
+		v.Posix.OwnerUID = uid
+		v.Posix.OwnerGID = gid
 	}
 
 	assert.Equal(t, &expectedEnvelope, mapping.Envelope())
