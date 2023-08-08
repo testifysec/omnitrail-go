@@ -28,6 +28,18 @@ func (plug *DirectoryPlugin) Sha256ADG(m map[string]string) {
 }
 
 func (plug *DirectoryPlugin) Add(path string) error {
+	// if this is a broken symlink, ignore
+	fileInfo, err := os.Lstat(path)
+	if err != nil {
+		return err
+	}
+	if fileInfo.Mode()&os.ModeSymlink != 0 {
+		// path is a symlink
+		if _, err := os.Stat(path); err != nil {
+			return nil
+		}
+	}
+
 	stat, err := os.Stat(path)
 	if err != nil {
 		return err
@@ -61,8 +73,6 @@ func (plug *DirectoryPlugin) Store(envelope *Envelope) error {
 			continue
 		}
 	}
-	//sha1tree := make(map[string]omnibor.ArtifactTree)
-	//sha256tree := make(map[string]omnibor.ArtifactTree)
 
 	for _, key := range keys {
 		if sha1tree != nil {

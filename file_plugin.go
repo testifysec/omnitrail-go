@@ -49,56 +49,81 @@ func NewFilePlugin() Plugin {
 	}
 }
 
-func (plug *FilePlugin) Add(path string) error {
-	stat, err := os.Stat(path)
+func (plug *FilePlugin) Add(filePath string) error {
+	// ignore broken symlink
+	localFileInfo, err := os.Lstat(filePath)
 	if err != nil {
 		return err
 	}
-	if stat.IsDir() {
+	if localFileInfo.Mode()&os.ModeSymlink != 0 {
+		if _, err = os.Stat(filePath); err != nil {
+			if err != nil {
+				return nil
+			}
+		}
+	}
+	fileInfo, err := os.Stat(filePath)
+	// if file is a symlink and the symlink points to a broken path, return nil
+	if err != nil {
+		return err
+	}
+
+	if fileInfo.IsDir() {
 		return nil
 	}
-	f, err := os.Open(path)
+
+	file, err := os.Open(filePath)
 	if err != nil {
 		return err
 	}
 
 	// explicitly ignore error from closing file
-	defer func(f *os.File) {
-		_ = f.Close()
-	}(f)
+	defer func(file *os.File) {
+		_ = file.Close()
+	}(file)
 
-	for _, algorithm := range plug.algorithms {
-		_, err := f.Seek(0, 0)
+	for _, hashAlgo := range plug.algorithms {
+
+		_, err := file.Seek(0, 0)
 		if err != nil {
 			return err
 		}
 
-		if strings.HasPrefix(algorithm, "gitoid:") {
-			var res *gitoid.GitOID
-			switch algorithm {
+		if strings.HasPrefix(hashAlgo, "gitoid:") {
+
+			var hashResult *gitoid.GitOID
+
+			switch hashAlgo {
 			case "gitoid:sha1":
-				res, err = gitoid.New(f, gitoid.WithContentLength(stat.Size()))
+				hashResult, err = gitoid.New(file, gitoid.WithContentLength(fileInfo.Size()))
 			case "gitoid:sha256":
-				res, err = gitoid.New(f, gitoid.WithContentLength(stat.Size()), gitoid.WithSha256())
+				hashResult, err = gitoid.New(file, gitoid.WithContentLength(fileInfo.Size()), gitoid.WithSha256())
 			}
+
 			if err != nil {
 				return err
 			}
-			plug.files[algorithm][path] = res.String()
+
+			plug.files[hashAlgo][filePath] = hashResult.String()
+
 		} else {
-			switch algorithm {
+
+			switch hashAlgo {
 			case "sha1":
 				hasher := sha1.New()
-				_, err = io.Copy(hasher, f)
-				res := hasher.Sum([]byte{})
-				plug.files[algorithm][path] = fmt.Sprintf("%x", res)
+				_, err = io.Copy(hasher, file)
+				hashBytes := hasher.Sum([]byte{})
+				plug.files[hashAlgo][filePath] = fmt.Sprintf("%x", hashBytes)
+
 			case "sha256":
 				hasher := sha256.New()
-				_, err = io.Copy(hasher, f)
-				res := hasher.Sum([]byte{})
-				plug.files[algorithm][path] = fmt.Sprintf("%x", res)
+				_, err = io.Copy(hasher, file)
+				hashBytes := hasher.Sum([]byte{})
+				plug.files[hashAlgo][filePath] = fmt.Sprintf("%x", hashBytes)
 			}
+
 		}
+
 	}
 
 	return nil
