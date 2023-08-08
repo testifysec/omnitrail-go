@@ -18,6 +18,18 @@ type posixInfo struct {
 }
 
 func (p *PosixPlugin) Add(path string) error {
+	// check if symlink is broken
+	localFileInfo, err := os.Lstat(path)
+	if err != nil {
+		return err
+	}
+	if localFileInfo.Mode()&os.ModeSymlink != 0 {
+		if _, err = os.Stat(path); err != nil {
+			if err != nil {
+				return nil
+			}
+		}
+	}
 	stat, err := os.Stat(path)
 	if err != nil {
 		return err
@@ -48,8 +60,7 @@ func (p *PosixPlugin) Store(envelope *Envelope) error {
 		element.Posix.OwnerUID = strconv.Itoa(int(p.params[path].uid))
 		element.Posix.OwnerGID = strconv.Itoa(int(p.params[path].gid))
 		if p.params[path].size != 0 {
-			siezString := strconv.Itoa(int(p.params[path].size))
-			element.Posix.Size = siezString
+			element.Posix.Size = strconv.Itoa(int(p.params[path].size))
 		}
 	}
 	return nil
