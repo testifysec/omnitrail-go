@@ -2,6 +2,7 @@ package omnitrail
 
 import (
 	"os"
+	"path/filepath"
 	"strconv"
 	"syscall"
 )
@@ -24,10 +25,15 @@ func (p *PosixPlugin) Add(path string) error {
 		return err
 	}
 	if localFileInfo.Mode()&os.ModeSymlink != 0 {
-		if _, err = os.Stat(path); err != nil {
-			if err != nil {
-				return nil
-			}
+		targetPath, err := os.Readlink(path)
+		if err != nil {
+			return err
+		}
+		if !filepath.IsAbs(targetPath) {
+			targetPath = filepath.Join(filepath.Dir(path), targetPath)
+		}
+		if _, err = os.Stat(targetPath); err != nil {
+			return nil
 		}
 	}
 	stat, err := os.Stat(path)
