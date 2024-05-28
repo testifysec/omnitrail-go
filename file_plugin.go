@@ -4,11 +4,13 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
-	"github.com/edwarnicke/gitoid"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/edwarnicke/gitoid"
 )
 
 type FilePlugin struct {
@@ -56,10 +58,16 @@ func (plug *FilePlugin) Add(filePath string) error {
 		return err
 	}
 	if localFileInfo.Mode()&os.ModeSymlink != 0 {
-		if _, err = os.Stat(filePath); err != nil {
-			if err != nil {
-				return nil
-			}
+		targetPath, err := os.Readlink(filePath)
+		if err != nil {
+			return err
+		}
+		if !filepath.IsAbs(targetPath) {
+
+			targetPath = filepath.Join(filepath.Dir(filePath), targetPath)
+		}
+		if _, err = os.Stat(targetPath); err != nil {
+			return nil
 		}
 	}
 	fileInfo, err := os.Stat(filePath)

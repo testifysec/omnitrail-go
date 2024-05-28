@@ -35,7 +35,14 @@ func (plug *DirectoryPlugin) Add(path string) error {
 	}
 	if fileInfo.Mode()&os.ModeSymlink != 0 {
 		// path is a symlink
-		if _, err := os.Stat(path); err != nil {
+		targetPath, err := os.Readlink(path)
+		if err != nil {
+			return err
+		}
+		if !filepath.IsAbs(targetPath) {
+			targetPath = filepath.Join(filepath.Dir(path), targetPath)
+		}
+		if _, err := os.Stat(targetPath); err != nil {
 			return nil
 		}
 	}
