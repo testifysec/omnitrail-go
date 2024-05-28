@@ -16,6 +16,16 @@ import (
 type FilePlugin struct {
 	algorithms []string
 	files      map[string]map[string]string
+	AllowList  []string
+}
+
+func (plug *FilePlugin) isAllowedDirectory(path string) bool {
+	for _, allowedPath := range plug.AllowList {
+		if strings.HasPrefix(path, allowedPath) {
+			return true
+		}
+	}
+	return false
 }
 
 func (plug *FilePlugin) Sha1ADG(m map[string]string) {
@@ -38,6 +48,10 @@ func (plug *FilePlugin) Sha256ADG(m map[string]string) {
 	}
 }
 
+func (plug *FilePlugin) SetAllowList(allowList []string) {
+	plug.AllowList = allowList
+}
+
 func NewFilePlugin() Plugin {
 	algorithms := []string{"sha1", "sha256", "gitoid:sha1", "gitoid:sha256"}
 	sort.Strings(algorithms)
@@ -52,19 +66,31 @@ func NewFilePlugin() Plugin {
 }
 
 func (plug *FilePlugin) Add(filePath string) error {
+
 	// ignore broken symlink
 	localFileInfo, err := os.Lstat(filePath)
 	if err != nil {
+		// if it's a symlink and the symlink is bad, ignore and return
+		if os.IsNotExist(err) {
+			return nil
+		}
 		return err
 	}
 	if localFileInfo.Mode()&os.ModeSymlink != 0 {
 		targetPath, err := os.Readlink(filePath)
 		if err != nil {
+			// if it's a symlink and the symlink is bad, ignore and return
+			if os.IsNotExist(err) {
+				return nil
+			}
+			fmt.Println("returning err: ", err)
 			return err
 		}
 		if !filepath.IsAbs(targetPath) {
-
 			targetPath = filepath.Join(filepath.Dir(filePath), targetPath)
+		}
+		if !plug.isAllowedDirectory(targetPath) {
+			return fmt.Errorf("path %s is not in the allow list", filePath)
 		}
 		if _, err = os.Stat(targetPath); err != nil {
 			return nil

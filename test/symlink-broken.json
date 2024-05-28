@@ -1,0 +1,46 @@
+{
+  "header": {
+    "features": {
+      "directory": {
+        "algorithms": [
+          "gitoid:sha1",
+          "gitoid:sha256"
+        ]
+      },
+      "file": {
+        "algorithms": [
+          "gitoid:sha1",
+          "gitoid:sha256",
+          "sha1",
+          "sha256"
+        ]
+      },
+      "posix": {}
+    }
+  },
+  "mapping": {
+    "/Users/frederickkautz/src/omnitrail-go/test/symlink-broken": {
+      "type": "directory",
+      "gitoid:sha1": "2a696b661094182bb79ac4c99d238d857879d6ad",
+      "gitoid:sha256": "045ec8de70efb3ac502eafba875bcb21b6eddb5ab09025a9de7187948ffebb68",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "drwxr-xr-x"
+      }
+    },
+    "/Users/frederickkautz/src/omnitrail-go/test/symlink-broken/hello.txt": {
+      "type": "file",
+      "sha1": "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d",
+      "sha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+      "gitoid:sha1": "b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0",
+      "gitoid:sha256": "8aec4e4876f854f688d0ebfc8f37598f38e5fd6903cccc850ca36591175aeb60",
+      "posix": {
+        "owner_gid": "20",
+        "owner_uid": "501",
+        "permissions": "-rw-r--r--",
+        "size": "5"
+      }
+    }
+  }
+}
