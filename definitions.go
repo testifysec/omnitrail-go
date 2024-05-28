@@ -60,4 +60,5 @@ type Plugin interface {
 	Store(envelope *Envelope) error
 	Sha1ADG(map[string]string)
 	Sha256ADG(map[string]string)
+	SetAllowList([]string)
 }

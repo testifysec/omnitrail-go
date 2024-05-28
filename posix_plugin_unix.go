@@ -1,14 +1,26 @@
 package omnitrail
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"syscall"
 )
 
 type PosixPlugin struct {
-	params map[string]*posixInfo
+	params    map[string]*posixInfo
+	AllowList []string
+}
+
+func (p *PosixPlugin) isAllowedDirectory(path string) bool {
+	for _, allowedPath := range p.AllowList {
+		if strings.HasPrefix(path, allowedPath) {
+			return true
+		}
+	}
+	return false
 }
 
 type posixInfo struct {
@@ -19,18 +31,30 @@ type posixInfo struct {
 }
 
 func (p *PosixPlugin) Add(path string) error {
+
 	// check if symlink is broken
 	localFileInfo, err := os.Lstat(path)
 	if err != nil {
+		// if it's a symlink and the symlink is bad, ignore and return
+		if os.IsNotExist(err) {
+			return nil
+		}
 		return err
 	}
 	if localFileInfo.Mode()&os.ModeSymlink != 0 {
 		targetPath, err := os.Readlink(path)
 		if err != nil {
+			// if it's a symlink and the symlink is bad, ignore and return
+			if os.IsNotExist(err) {
+				return nil
+			}
 			return err
 		}
 		if !filepath.IsAbs(targetPath) {
 			targetPath = filepath.Join(filepath.Dir(path), targetPath)
+		}
+		if !p.isAllowedDirectory(targetPath) {
+			return fmt.Errorf("path %s is not in the allow list", path)
 		}
 		if _, err = os.Stat(targetPath); err != nil {
 			return nil
@@ -76,6 +100,10 @@ func (p *PosixPlugin) Sha1ADG(_ map[string]string) {
 }
 
 func (p *PosixPlugin) Sha256ADG(_ map[string]string) {
+}
+
+func (plug *PosixPlugin) SetAllowList(allowList []string) {
+	plug.AllowList = allowList
 }
 
 func NewPosixPlugin() Plugin {

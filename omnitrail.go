@@ -13,11 +13,13 @@ func NewTrail(option ...Option) Factory {
 	if o.Sha1Enabled == false && o.Sha256Enabled == false {
 		o.Sha1Enabled = true
 	}
+	allowList := []string{}
 	plugins := make([]Plugin, 0)
 	plugins = append(plugins, NewFilePlugin())
 	plugins = append(plugins, NewDirectoryPlugin())
 	plugins = append(plugins, NewPosixPlugin())
-	return &factoryImpl{
+
+	factory := &factoryImpl{
 		Options: o,
 		Plugins: plugins,
 		envelope: &Envelope{
@@ -26,7 +28,10 @@ func NewTrail(option ...Option) Factory {
 			},
 			Mapping: make(map[string]*Element),
 		},
+		AllowList: allowList,
 	}
+
+	return factory
 }
 
 func FormatADGString(mapping Factory) string {

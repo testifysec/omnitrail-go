@@ -7,15 +7,25 @@ import (
 )
 
 type factoryImpl struct {
-	Options  *Options
-	envelope *Envelope
-	Plugins  []Plugin
+	Options   *Options
+	envelope  *Envelope
+	Plugins   []Plugin
+	AllowList []string
 }
 
 func (factory *factoryImpl) Add(originalPath string) error {
-	originalPath, err := filepath.Abs(originalPath)
+	// Convert the path to an absolute path
+	absPath, err := filepath.Abs(originalPath)
 	if err != nil {
 		return err
+	}
+
+	// Add the absolute path to the allow list
+	factory.AllowList = append(factory.AllowList, absPath)
+
+	// For each plugin, add the allow list
+	for _, plugin := range factory.Plugins {
+		plugin.SetAllowList(factory.AllowList)
 	}
 
 	// check if path already exists in the envelope, if so, return

@@ -1,10 +1,13 @@
 package omnitrail
 
 import (
-	"github.com/omnibor/omnibor-go"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
+
+	"github.com/omnibor/omnibor-go"
 )
 
 type DirectoryPlugin struct {
@@ -13,6 +16,16 @@ type DirectoryPlugin struct {
 	directories map[string]bool
 	sha1adgs    map[string]omnibor.ArtifactTree
 	sha256adgs  map[string]omnibor.ArtifactTree
+	AllowList   []string
+}
+
+func (plug *DirectoryPlugin) isAllowedDirectory(path string) bool {
+	for _, allowedPath := range plug.AllowList {
+		if strings.HasPrefix(path, allowedPath) {
+			return true
+		}
+	}
+	return false
 }
 
 func (plug *DirectoryPlugin) Sha1ADG(m map[string]string) {
@@ -28,19 +41,31 @@ func (plug *DirectoryPlugin) Sha256ADG(m map[string]string) {
 }
 
 func (plug *DirectoryPlugin) Add(path string) error {
+
 	// if this is a broken symlink, ignore
 	fileInfo, err := os.Lstat(path)
 	if err != nil {
+		// if it's a symlink and the symlink is bad, ignore and return
+		if os.IsNotExist(err) {
+			return nil
+		}
 		return err
 	}
 	if fileInfo.Mode()&os.ModeSymlink != 0 {
 		// path is a symlink
 		targetPath, err := os.Readlink(path)
 		if err != nil {
+			// if it's a symlink and the symlink is bad, ignore and return
+			if os.IsNotExist(err) {
+				return nil
+			}
 			return err
 		}
 		if !filepath.IsAbs(targetPath) {
 			targetPath = filepath.Join(filepath.Dir(path), targetPath)
+		}
+		if !plug.isAllowedDirectory(targetPath) {
+			return fmt.Errorf("path %s is not in the allow list", path)
 		}
 		if _, err := os.Stat(targetPath); err != nil {
 			return nil
@@ -166,6 +191,10 @@ func (plug *DirectoryPlugin) addKeysToTree(keys []string, tree map[string]omnibo
 		}
 	}
 	return nil
+}
+
+func (plug *DirectoryPlugin) SetAllowList(allowList []string) {
+	plug.AllowList = allowList
 }
 
 func NewDirectoryPlugin() Plugin {
