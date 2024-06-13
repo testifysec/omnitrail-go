@@ -21,8 +21,14 @@ jobs:
       with:
         go-version: 1.19
 
-    - name: Build
-      run: go build -v ./...
+    - name: Build linux
+      run: GOOS=linux go build -v ./...
+
+    - name: Build windows
+      run: GOOS=windows go build -v ./...
+
+    - name: Build macos
+      run: GOOS=darwin go build -v ./...
 
     - name: Test
       run: go test -v ./...
