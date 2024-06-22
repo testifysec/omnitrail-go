@@ -5,6 +5,14 @@ import (
 	"sort"
 )
 
+type PluginInit func() Plugin
+
+var pluginMap = make(map[string]PluginInit)
+
+func RegisterPlugin(name string, initFn PluginInit) {
+	pluginMap[name] = initFn
+}
+
 func NewTrail(option ...Option) Factory {
 	o := &Options{}
 	for _, opt := range option {
@@ -15,9 +23,16 @@ func NewTrail(option ...Option) Factory {
 	}
 	allowList := []string{}
 	plugins := make([]Plugin, 0)
+	// Directory plugin depends on the File plugin
+	// We assume all other plugins depend on both the File and Directory plugins
 	plugins = append(plugins, NewFilePlugin())
 	plugins = append(plugins, NewDirectoryPlugin())
-	plugins = append(plugins, NewPosixPlugin())
+	// We load all other plugins here
+	for _, pluginInitFunc := range pluginMap {
+		plugins = append(plugins, pluginInitFunc())
+	}
+
+	fmt.Println(plugins)
 
 	factory := &factoryImpl{
 		Options: o,

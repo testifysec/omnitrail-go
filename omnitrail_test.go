@@ -85,6 +85,9 @@ func testAdd(t *testing.T, name string) error {
 		return err
 	}
 
+	a, _ := json.MarshalIndent(mapping.Envelope(), "", "  ")
+	fmt.Println(string(a))
+
 	// WARNING: these are only for generating new test cases easily
 	// file, err := json.MarshalIndent(mapping.Envelope(), "", "  ")
 	// os.WriteFile("./test/"+name+".json", file, 0644)
@@ -106,8 +109,13 @@ func testAdd(t *testing.T, name string) error {
 	shortestExpectedKey := getShortestKey(&expectedEnvelope)
 	shortestActualKey := getShortestKey(mapping.Envelope())
 
+	fmt.Println(shortestExpectedKey)
+	fmt.Println(shortestActualKey)
+
 	for oldKey, val := range expectedEnvelope.Mapping {
+		fmt.Println("old key: ", oldKey)
 		newKey := strings.Replace(oldKey, shortestExpectedKey, shortestActualKey, 1)
+		fmt.Println("new key: ", oldKey)
 		delete(expectedEnvelope.Mapping, oldKey)
 		expectedEnvelope.Mapping[newKey] = val
 	}

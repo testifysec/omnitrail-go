@@ -1,3 +1,5 @@
+//go:build linux || darwin
+
 package omnitrail
 
 import (
@@ -8,6 +10,10 @@ import (
 	"strings"
 	"syscall"
 )
+
+func init() {
+	RegisterPlugin("posix", NewPosixPlugin)
+}
 
 type PosixPlugin struct {
 	params    map[string]*posixInfo
